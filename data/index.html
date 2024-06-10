@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <meta name="color-scheme" content="light dark" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <style>
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <nav>
+          <ul>
+            <li>
+              <h2>BambuLED</h2>
+            </li>
+          </ul>
+          <ul>
+            <li><a href="settings.html">Settings</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <div class="grid">
+        <article class="colors-card">
+          <header><strong>Colors</strong></header>
+          <div class="loading" aria-busy="true"></div>
+          <form
+            name="colors"
+            method="post"
+            action="/save_colors"
+            class="hidden"
+          >
+            <div class="grid">
+              <label>
+                Background
+                <input
+                  type="color"
+                  name="color_bg"
+                  id="color_bg"
+                  aria-label="Background Color"
+                />
+              </label>
+              <label>
+                Progress
+                <input
+                  type="color"
+                  name="color_fg"
+                  id="color_fg"
+                  aria-label="Foreground Color"
+                />
+              </label>
+
+              <label>
+                Brightness
+                <input type="range" value="40" min="1" max="100" step="1" />
+              </label>
+            </div>
+
+            <input type="submit" value="Save" />
+          </form>
+        </article>
+      </div>
+    </main>
+
+    <script>
+      function rgbToHex(rgb) {
+        return '#' + rgb.map((v) => v.toString(16).padStart(2, '0')).join('')
+      }
+
+      function hexToRgb(hex) {
+        return hex.match(/^([a-f\d]{2}){3}$/g).map((v) => parseInt(v, 16))
+      }
+
+      fetch('/colors.json')
+        .then((res) => res.json())
+        .then((data) => {
+          console.log('Got UI data:', data)
+          // wifi_ssid.value = data.wifi_ssid
+          // ip.value = data.mqtt_server
+          // serial.value = data.mqtt_device_serial
+          // access_code.value = data.mqtt_pass
+
+          document.querySelector('.colors-card .loading').remove()
+          document.querySelector('.colors-card form').classList.remove('hidden')
+        })
+      // document.addEventListener('alpine:init', () => {
+      //   Alpine.data('wifi', () => ({
+      //     loading: true,
+      //     serial: '',
+      //     open: false,
+
+      //     init() {
+      //       console.log('init')
+      //       this.loading = false
+      //     },
+
+      //     onFormSubmit(e) {
+      //       e.preventDefault()
+      //     },
+      //   }))
+
+      //   Alpine.data('printer', () => ({
+      //     loading: true,
+      //     serial: '',
+      //     open: false,
+
+      //     init() {
+      //       console.log('init')
+      //       this.loading = false
+      //     },
+
+      //     onFormSubmit(e) {
+      //       // e.preventDefault()
+      //     },
+      //   }))
+      // })
+    </script>
+  </body>
+</html>

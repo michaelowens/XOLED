@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <meta name="color-scheme" content="light dark" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <style>
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <nav>
+          <ul>
+            <li>
+              <h2>BambuLED</h2>
+            </li>
+          </ul>
+          <ul>
+            <li><a href="/">Back to Home</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <div class="grid">
+        <article class="wifi-card">
+          <header><strong>WiFi</strong></header>
+          <div class="loading" aria-busy="true"></div>
+          <form name="wifi" method="post" action="/save_wifi" class="hidden">
+            <label>
+              SSID
+              <input
+                type="text"
+                name="wifi_ssid"
+                id="wifi_ssid"
+                aria-label="WiFi SSID"
+              />
+            </label>
+            <label>
+              Password
+              <input
+                type="password"
+                name="wifi_pass"
+                id="wifi_pass"
+                aria-label="WiFi Password"
+              />
+            </label>
+            <input type="submit" value="Save" />
+          </form>
+        </article>
+
+        <article class="printer-card">
+          <header><strong>Printer</strong></header>
+          <form
+            name="printer"
+            method="post"
+            action="/save_printer"
+            class="hidden"
+          >
+            <div class="loading" aria-busy="true"></div>
+            <label>
+              Device IP
+              <input type="text" name="ip" id="ip" aria-label="Printer IP" />
+            </label>
+            <label>
+              Device Serial
+              <input
+                type="text"
+                name="serial"
+                id="serial"
+                aria-label="Printer Serial"
+              />
+            </label>
+            <label>
+              Device Access Code
+              <input
+                type="password"
+                name="access_code"
+                id="access_code"
+                aria-label="Printer Access Code"
+              />
+            </label>
+            <input type="submit" value="Save" />
+          </form>
+        </article>
+      </div>
+    </main>
+
+    <script>
+      fetch('/settings.json')
+        .then((res) => res.json())
+        .then((data) => {
+          wifi_ssid.value = data.wifi_ssid
+          ip.value = data.mqtt_server
+          serial.value = data.mqtt_device_serial
+          access_code.value = data.mqtt_pass
+
+          document.querySelector('.wifi-card .loading').remove()
+          document.querySelector('.wifi-card form').classList.remove('hidden')
+
+          document.querySelector('.printer-card .loading').remove()
+          document
+            .querySelector('.printer-card form')
+            .classList.remove('hidden')
+        })
+    </script>
+  </body>
+</html>

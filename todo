@@ -1,0 +1,4 @@
+☐ Test if changing printer IP correctly reconnects mqtt
+☐ Reconnect wifi when changing through UI
+☐ Ability to change colors for progress bar (background and foreground)
+☐ Double check if docs folder gets all the correct files (firmware + spiffs)
