@@ -1,5 +1,6 @@
 ☐ Test if changing printer IP correctly reconnects mqtt
 ☐ Reconnect wifi when changing through UI
-☐ Add led settings: led count & max milliwatts
-☐ Ability to change colors for progress bar (background and foreground)
-☐ Double check if docs folder gets all the correct files (firmware + spiffs)
+✔ Add led settings: led count & max milliwatts @done(24-06-11 16:46)
+✔ Ability to change colors for progress bar (background and foreground) @done(24-06-11 16:46)
+✔ Set defaults for config upon new installation @done(24-06-11 16:46)
+✔ Double check if docs folder gets all the correct files (firmware + spiffs) @done(24-06-11 16:46)

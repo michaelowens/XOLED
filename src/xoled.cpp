@@ -8,7 +8,7 @@ uint8_t progress = 0;
 
 CRGB PROGRESS_ON_LED = CRGB::Blue;
 CRGB PROGRESS_OFF_LED = CRGB::DarkOrange;
-CRGB leds[NUM_LEDS];
+CRGB *leds;
 
 WiFiClientSecure esp_client;
 
@@ -86,18 +86,33 @@ void XOLED::setup_services() {
   webserver_setup();
 }
 
-void XOLED::setup() {
-  FastLED.addLeds<WS2812B, DATA_PIN, RGB>(leds, NUM_LEDS);
-  FastLED.setMaxPowerInMilliWatts(850);
-  FastLED.setBrightness(64);
+void XOLED::setup_leds() {
+  if (FastLED.count() != 0) {
+    FastLED.clear();
+    FastLED.show();
+    delete[] leds;
+  }
+
+  leds = new CRGB[config.led_count];
+
+  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, config.led_count);
+  FastLED.setMaxPowerInMilliWatts(config.max_milliwatts); // (850);
+  FastLED.setBrightness(config.brightness);
   FastLED.clear();
   FastLED.show();
-  
+}
+
+void XOLED::setup() {
   if (!SPIFFS.begin()) {
     Serial.println("SPIFFS failed to initialize");
   }
 
   config_load_from_FS();
+
+  PROGRESS_ON_LED = CRGB(config.color_fg[0], config.color_fg[1], config.color_fg[2]);
+  PROGRESS_OFF_LED = CRGB(config.color_bg[0], config.color_bg[1], config.color_bg[2]);
+  setup_leds();
+
   improv_setup();
 
   if (strlen(config.wifi_ssid) > 0) {
@@ -119,14 +134,13 @@ void XOLED::loop() {
 
   EVERY_N_MILLIS(1000) {
     float percentage = (float)progress/(float)100;
-    float onLeds = (float)NUM_LEDS * percentage;
+    float onLeds = (float)config.led_count * percentage;
 
-    for(int i = 0; i < NUM_LEDS; i = i + 1) {
+    for(int i = 0; i < config.led_count; i = i + 1) {
       if (i < (int)onLeds) {
         leds[i] = PROGRESS_ON_LED;
       } else {
-        leds[i] = PROGRESS_OFF_LED.fadeLightBy(4);
-        // leds[i].fadeLightBy(16);
+        leds[i] = PROGRESS_OFF_LED;
       }
     }
     FastLED.show();

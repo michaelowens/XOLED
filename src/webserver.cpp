@@ -18,6 +18,19 @@ bool store_string_param(AsyncWebServerRequest *request, char *dest, const char *
   return false;
 }
 
+template<typename T>
+bool store_int_param(AsyncWebServerRequest *request, T &dest, const char *key) {
+  if (request->hasParam(key, true)) {
+    long value = request->getParam(key, true)->value().toInt();
+    if (dest != value) {
+      dest = value;
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void webserver_setup() {
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
 
@@ -40,6 +53,9 @@ void webserver_setup() {
 
   server.on("/settings.json", HTTP_GET, [](AsyncWebServerRequest *request){
     JsonDocument doc;
+    doc["led_count"] = config.led_count;
+    doc["max_milliwatts"] = config.max_milliwatts;
+
     doc["wifi_ssid"] = config.wifi_ssid;
     doc["mqtt_server"] = config.mqtt_server;
     doc["mqtt_device_serial"] = config.mqtt_device_serial;
@@ -60,6 +76,7 @@ void webserver_setup() {
       config.color_bg[0] = r;
       config.color_bg[1] = g;
       config.color_bg[2] = b;
+      PROGRESS_OFF_LED = CRGB(r, g, b);
       has_changes = true;
     }
 
@@ -70,12 +87,14 @@ void webserver_setup() {
       config.color_fg[0] = r;
       config.color_fg[1] = g;
       config.color_fg[2] = b;
+      PROGRESS_ON_LED = CRGB(r, g, b);
       has_changes = true;
     }
     
     if (request->hasParam("brightness", true)) {
       long value = request->getParam("brightness", true)->value().toInt();
       config.brightness = value;
+      FastLED.setBrightness(config.brightness);
       has_changes = true;
     }
 
@@ -92,6 +111,26 @@ void webserver_setup() {
     }
     
     request->redirect("/");
+  });
+
+  server.on("/save_led", HTTP_POST, [](AsyncWebServerRequest *request) {
+    bool has_changes = false;
+
+    if (store_int_param(request, config.led_count, "led_count")) {
+      XOLED::instance().setup_leds();
+      has_changes = true;
+    }
+
+    if (store_int_param(request, config.max_milliwatts, "max_milliwatts")) {
+      FastLED.setMaxPowerInMilliWatts(config.max_milliwatts);
+      has_changes = true;
+    }
+
+    if (has_changes) {
+      config_save();
+    }
+
+    request->redirect("/settings.html");
   });
 
   server.on("/save_wifi", HTTP_POST, [](AsyncWebServerRequest *request){
@@ -136,4 +175,6 @@ void webserver_setup() {
 
   server.onNotFound(not_found);
   server.begin();
+
+  Serial.println("Webserver started");
 }

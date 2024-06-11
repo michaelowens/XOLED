@@ -26,7 +26,7 @@ bool read_object_from_file(const char* file, JsonDocument* dest) {
   return true;
 }
 
-bool config_load(bool fromFS) {
+bool config_load(bool from_fs) {
   get_string_from_json(config.wifi_ssid, doc["wifi_ssid"], 33);
   get_string_from_json(config.wifi_pass, doc["wifi_pass"], 65);
   
@@ -36,6 +36,10 @@ bool config_load(bool fromFS) {
   get_string_from_json(config.mqtt_pass, doc["mqtt_pass"], 128);
   get_string_from_json(config.mqtt_device_serial, doc["mqtt_device_serial"], 128);
 
+  CJSON(config.led_count, doc["led_count"]);
+  CJSON(config.max_milliwatts, doc["max_milliwatts"]);
+  if (config.max_milliwatts < 1) config.max_milliwatts = 1;
+
   config.color_bg[0] = doc["color_bg"][0];
   config.color_bg[1] = doc["color_bg"][1];
   config.color_bg[2] = doc["color_bg"][2];
@@ -43,6 +47,17 @@ bool config_load(bool fromFS) {
   config.color_fg[0] = doc["color_fg"][0];
   config.color_fg[1] = doc["color_fg"][1];
   config.color_fg[2] = doc["color_fg"][2];
+
+  CJSON(config.brightness, doc["brightness"]);
+  
+  if (!from_fs) {
+    // Defaults
+    config.led_count = 10;
+    config.max_milliwatts = 850;
+    config.color_bg[0] = 150;
+    config.color_fg[1] = 150;
+    config.brightness = 64;
+  }
 
   return false;
 }
@@ -59,6 +74,9 @@ void config_save() {
   doc["mqtt_pass"] = config.mqtt_pass;
   doc["mqtt_device_serial"] = config.mqtt_device_serial;
   
+  doc["led_count"] = config.led_count;
+  doc["max_milliwatts"] = config.max_milliwatts;
+
   JsonArray color_bg = doc["color_bg"].to<JsonArray>();
   color_bg.add(config.color_bg[0]);
   color_bg.add(config.color_bg[1]);
@@ -81,6 +99,7 @@ bool config_load_from_FS() {
   if (!success) {
     // file doesn't exist
     config_save();
+    config_load(false);
     return false;
   }
 

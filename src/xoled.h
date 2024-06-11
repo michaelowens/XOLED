@@ -31,6 +31,9 @@ extern uint8_t progress;
 
 extern WiFiClientSecure esp_client;
 
+extern CRGB PROGRESS_ON_LED;
+extern CRGB PROGRESS_OFF_LED;
+
 class XOLED {
 public:
   static XOLED& instance() {
@@ -43,6 +46,7 @@ public:
   bool setup_wifi();
   bool setup_time();
   void setup_services();
+  void setup_leds();
 
   void setup();
   void loop();
