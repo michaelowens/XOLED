@@ -11,6 +11,9 @@ struct Config {
   char mqtt_pass[128];
   char mqtt_device_serial[32];
 
+  uint16_t led_count;
+  uint32_t max_milliwatts;
+
   uint8_t color_bg[3];
   uint8_t color_fg[3];
   uint8_t brightness;

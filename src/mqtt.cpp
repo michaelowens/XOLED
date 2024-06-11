@@ -1,6 +1,6 @@
 #include "xoled.h"
 
-PubSubClient mqtt_client(espClient);
+PubSubClient mqtt_client(esp_client);
 
 void callback(char* topic, byte* payload, unsigned int length) {
   // Serial.print("Message received [");
@@ -50,7 +50,7 @@ void mqtt_reconnect() {
 }
 
 void mqtt_setup() {
-  espClient.setInsecure();
+  esp_client.setInsecure();
   mqtt_client.setCallback(callback);
   mqtt_client.setBufferSize(JSON_BUFFER_SIZE);
 }

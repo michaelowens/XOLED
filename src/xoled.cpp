@@ -10,18 +10,18 @@ CRGB PROGRESS_ON_LED = CRGB::Blue;
 CRGB PROGRESS_OFF_LED = CRGB::DarkOrange;
 CRGB leds[NUM_LEDS];
 
-WiFiClientSecure espClient;
+WiFiClientSecure esp_client;
 
-long loops = 0;
-unsigned long currentMillisFPS;
-unsigned long lastMillisFPS;
+long fps_loops = 0;
+unsigned long fps_current_millis;
+unsigned long fps_last_millis;
 void printfps() {
-  currentMillisFPS = millis();
-  loops++;
-  if (currentMillisFPS - lastMillisFPS > 1000) {
-    Serial.println(loops);
-    lastMillisFPS = currentMillisFPS;
-    loops = 0;
+  fps_current_millis = millis();
+  fps_loops++;
+  if (fps_current_millis - fps_last_millis > 1000) {
+    Serial.println(fps_loops);
+    fps_last_millis = fps_current_millis;
+    fps_loops = 0;
   }
 }
 

@@ -122,7 +122,7 @@
     </main>
 
     <script>
-      const $ = document.querySelector
+      const $ = document.querySelector.bind(document)
       fetch('http://192.168.178.227/settings.json')
         .then((res) => res.json())
         .then((data) => {

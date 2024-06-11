@@ -63,7 +63,14 @@
 
               <label>
                 Brightness
-                <input type="range" min="1" max="100" step="1" />
+                <input
+                  name="brightness"
+                  id="brightness"
+                  type="range"
+                  min="1"
+                  max="100"
+                  step="1"
+                />
               </label>
             </div>
 
@@ -74,15 +81,15 @@
     </main>
 
     <script>
-      const $ = document.querySelector
+      const $ = document.querySelector.bind(document)
 
-      function rgbToHex(rgb) {
-        return '#' + rgb.map((v) => v.toString(16).padStart(2, '0')).join('')
-      }
+      // function rgbToHex(rgb) {
+      //   return '#' + rgb.map((v) => v.toString(16).padStart(2, '0')).join('')
+      // }
 
-      function hexToRgb(hex) {
-        return hex.match(/^([a-f\d]{2}){3}$/g).map((v) => parseInt(v, 16))
-      }
+      // function hexToRgb(hex) {
+      //   return hex.match(/^([a-f\d]{2}){3}$/g).map((v) => parseInt(v, 16))
+      // }
 
       fetch('http://192.168.178.227/colors.json')
         .then((res) => res.json())

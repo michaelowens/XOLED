@@ -29,7 +29,7 @@
 extern Config config;
 extern uint8_t progress;
 
-extern WiFiClientSecure espClient;
+extern WiFiClientSecure esp_client;
 
 class XOLED {
 public:
