@@ -32,6 +32,32 @@
     </header>
     <main class="container">
       <div class="grid">
+        <article class="led-card">
+          <header><strong>LED</strong></header>
+          <div class="loading" aria-busy="true"></div>
+          <form name="wifi" method="post" action="/save_led" class="hidden">
+            <label>
+              LEDs
+              <input
+                type="number"
+                name="led_count"
+                id="led_count"
+                aria-label="Amount of LEDs"
+              />
+            </label>
+            <label>
+              Max Power (MilliWatts)
+              <input
+                type="number"
+                name="max_milliwatts"
+                id="max_milliwatts"
+                aria-label="Max Power in MilliWatts"
+              />
+            </label>
+            <input type="submit" value="Save" />
+          </form>
+        </article>
+
         <article class="wifi-card">
           <header><strong>WiFi</strong></header>
           <div class="loading" aria-busy="true"></div>
@@ -96,21 +122,24 @@
     </main>
 
     <script>
-      fetch('/settings.json')
+      const $ = document.querySelector
+      fetch('http://192.168.178.227/settings.json')
         .then((res) => res.json())
         .then((data) => {
+          led_count.value = data.led_count
+          max_milliwatts.value = data.max_milliwatts
+          $('.led-card .loading').remove()
+          $('.led-card form').classList.remove('hidden')
+
           wifi_ssid.value = data.wifi_ssid
+          $('.wifi-card .loading').remove()
+          $('.wifi-card form').classList.remove('hidden')
+
           ip.value = data.mqtt_server
           serial.value = data.mqtt_device_serial
           access_code.value = data.mqtt_pass
-
-          document.querySelector('.wifi-card .loading').remove()
-          document.querySelector('.wifi-card form').classList.remove('hidden')
-
-          document.querySelector('.printer-card .loading').remove()
-          document
-            .querySelector('.printer-card form')
-            .classList.remove('hidden')
+          $('.printer-card .loading').remove()
+          $('.printer-card form').classList.remove('hidden')
         })
     </script>
   </body>

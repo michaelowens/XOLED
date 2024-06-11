@@ -63,7 +63,7 @@
 
               <label>
                 Brightness
-                <input type="range" value="40" min="1" max="100" step="1" />
+                <input type="range" min="1" max="100" step="1" />
               </label>
             </div>
 
@@ -74,6 +74,8 @@
     </main>
 
     <script>
+      const $ = document.querySelector
+
       function rgbToHex(rgb) {
         return '#' + rgb.map((v) => v.toString(16).padStart(2, '0')).join('')
       }
@@ -82,17 +84,15 @@
         return hex.match(/^([a-f\d]{2}){3}$/g).map((v) => parseInt(v, 16))
       }
 
-      fetch('/colors.json')
+      fetch('http://192.168.178.227/colors.json')
         .then((res) => res.json())
         .then((data) => {
-          console.log('Got UI data:', data)
-          // wifi_ssid.value = data.wifi_ssid
-          // ip.value = data.mqtt_server
-          // serial.value = data.mqtt_device_serial
-          // access_code.value = data.mqtt_pass
+          color_bg.value = data.color_bg
+          color_fg.value = data.color_fg
+          brightness.value = data.brightness
 
-          document.querySelector('.colors-card .loading').remove()
-          document.querySelector('.colors-card form').classList.remove('hidden')
+          $('.colors-card .loading').remove()
+          $('.colors-card form').classList.remove('hidden')
         })
       // document.addEventListener('alpine:init', () => {
       //   Alpine.data('wifi', () => ({

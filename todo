@@ -1,4 +1,5 @@
 ☐ Test if changing printer IP correctly reconnects mqtt
 ☐ Reconnect wifi when changing through UI
+☐ Add led settings: led count & max milliwatts
 ☐ Ability to change colors for progress bar (background and foreground)
 ☐ Double check if docs folder gets all the correct files (firmware + spiffs)
