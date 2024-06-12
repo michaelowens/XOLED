@@ -91,7 +91,7 @@
       //   return hex.match(/^([a-f\d]{2}){3}$/g).map((v) => parseInt(v, 16))
       // }
 
-      fetch('http://192.168.178.227/colors.json')
+      fetch('/colors.json')
         .then((res) => res.json())
         .then((data) => {
           color_bg.value = data.color_bg
