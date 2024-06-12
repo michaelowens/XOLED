@@ -9,7 +9,24 @@
           "offset": 0
         },
         {
-          "path": "firmware.bin",
+          "path": "firmware_esp32dev.bin",
+          "offset": 65536
+        },
+        {
+          "path": "spiffs.bin",
+          "offset": 3211264
+        }
+      ]
+    },
+    {
+      "chipFamily": "ESP32-C3",
+      "parts": [
+        {
+          "path": "esp32-c3_bootloader_v2.bin",
+          "offset": 0
+        },
+        {
+          "path": "firmware_esp32c3dev.bin",
           "offset": 65536
         },
         {

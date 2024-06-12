@@ -36,10 +36,10 @@ def bin_rename_copy(source, target, env):
     # if release_name:
     _create_dirs(["release"])
     # version = _get_cpp_define_value(env, "WLED_VERSION")
-    release_file = "{}release{}firmware.bin".format(OUTPUT_DIR, os.path.sep)
+    release_file = "{}release{}firmware_{}.bin".format(OUTPUT_DIR, os.path.sep, variant)
     shutil.copy(str(target[0]), release_file)
     
-    docs_file = "docs{}bins{}firmware.bin".format(os.path.sep, os.path.sep)
+    docs_file = "docs{}bins{}firmware_{}.bin".format(os.path.sep, os.path.sep, variant)
     shutil.copy(str(target[0]), docs_file)
 
     # check if new target files exist and remove if necessary

@@ -1,8 +1,5 @@
 #include "xoled.h"
 
-#define DATA_PIN 16
-#define NUM_LEDS 53
-
 Config config{};
 uint8_t progress = 0;
 

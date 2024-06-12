@@ -8,4 +8,10 @@
   #define JSON_BUFFER_SIZE 24576
 #endif
 
+#ifdef ARDUINO_ARCH_ESP32C3
+  #define DATA_PIN 3
+#else // ESP32
+  #define DATA_PIN 14
+#endif
+
 #endif // XOLED_CONST_H
