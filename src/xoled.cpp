@@ -193,7 +193,9 @@ void XOLED::loop() {
     }
   }
 
-  FastLED.show();
+  EVERY_N_MILLIS(67) {
+    FastLED.show();
+  }
 
   // EVERY_N_MILLIS(1000) {
     // switch (state) {
