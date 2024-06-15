@@ -34,6 +34,42 @@ extern WiFiClientSecure esp_client;
 extern CRGB PROGRESS_ON_LED;
 extern CRGB PROGRESS_OFF_LED;
 
+struct LoadingState {
+  uint8_t angle; // sine wave phase for fx
+};
+struct ErrorState {};
+struct PrintingState { uint8_t percentage; };
+struct FinishedState {
+  unsigned long since;
+  uint8_t angle; // sine wave phase for fx
+};
+
+union StateData {
+  LoadingState loading;
+  PrintingState printing;
+  FinishedState finished;
+  ErrorState error;
+};
+
+enum class DeviceState {
+  Loading, Printing, Finished, Error
+};
+
+class Device {
+public:
+  DeviceState state;
+  StateData data;
+
+  Device() : state(DeviceState::Loading) {}
+
+  void set_state(DeviceState new_state, StateData new_data) {
+    state = new_state;
+    data = new_data;
+  }
+};
+
+extern Device device;
+
 class XOLED {
 public:
   static XOLED& instance() {

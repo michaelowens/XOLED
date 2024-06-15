@@ -9,6 +9,9 @@ CRGB *leds;
 
 WiFiClientSecure esp_client;
 
+// DeviceState state = LoadingState{0};
+Device device;
+
 long fps_loops = 0;
 unsigned long fps_current_millis;
 unsigned long fps_last_millis;
@@ -129,20 +132,90 @@ void XOLED::loop() {
   improv_loop();
   mqtt_loop();
 
-  EVERY_N_MILLIS(1000) {
-    float percentage = (float)progress/(float)100;
-    float onLeds = (float)config.led_count * percentage;
-
-    for(int i = 0; i < config.led_count; i = i + 1) {
-      if (i < (int)onLeds) {
-        leds[i] = PROGRESS_ON_LED;
-      } else {
-        leds[i] = PROGRESS_OFF_LED;
+  // mpark::visit(deviceStateHandler, state);
+  switch (device.state) {
+    case DeviceState::Loading: {
+      unsigned long t = millis();
+      int x = 10.5+sin(t/750.0)*10;
+      for (int i = 0; i < config.led_count; i++) {
+        if (i < x) {
+          leds[i] = CRGB::Orange;
+        } else {
+          leds[i] = CRGB(30, 20, 0);
+        }
       }
+      break;
     }
-    FastLED.show();
-    // FastLED.delay(100);
+
+    case DeviceState::Error: {
+      unsigned long t = millis();
+      int x = 10.5+sin(t/750.0)*10;
+      for (int i = 0; i < config.led_count; i++) {
+        if (i < x) {
+          leds[i] = CRGB::Red;
+        } else {
+          leds[i] = CRGB(30, 0, 0);
+        }
+      }
+      break;
+    }
+
+    case DeviceState::Printing: {
+      float percentage = (float)device.data.printing.percentage/(float)100;
+      float onLeds = (float)config.led_count * percentage;
+
+      for(int i = 0; i < config.led_count; i = i + 1) {
+        if (i < (int)onLeds) {
+          leds[i] = PROGRESS_ON_LED;
+        } else {
+          leds[i] = PROGRESS_OFF_LED;
+        }
+      }
+      break;
+    }
+
+    case DeviceState::Finished: {
+      unsigned long t = millis();
+
+      // After 30 seconds, switch to solid colors
+      if (t - device.data.finished.since > 30000) {
+        for(int i = 0; i < config.led_count; i = i + 1) {
+          leds[i] = PROGRESS_ON_LED;
+        }
+        break;
+      }
+
+      for(int i=0; i<config.led_count; i++){
+        int period = 500+(i*421)%500;
+        leds[i]=CRGB(0, 255*(t%period<period/2), 0);
+      }
+      break;
+    }
   }
+
+  FastLED.show();
+
+  // EVERY_N_MILLIS(1000) {
+    // switch (state) {
+    //   case LoadingState:
+    //     break;
+
+    //   case DeviceStateType::Printing:
+    //     float percentage = (float)state.data.printing.percentage/(float)100;
+    //     float onLeds = (float)config.led_count * percentage;
+
+    //     for(int i = 0; i < config.led_count; i = i + 1) {
+    //       if (i < (int)onLeds) {
+    //         leds[i] = PROGRESS_ON_LED;
+    //       } else {
+    //         leds[i] = PROGRESS_OFF_LED;
+    //       }
+    //     }
+    //     break;
+    // }
+    // FastLED.show();
+    // FastLED.delay(100);
+  // }
   // delay(50);
 }
 
