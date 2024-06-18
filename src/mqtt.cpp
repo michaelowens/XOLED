@@ -2,6 +2,7 @@
 #include <optional>
 
 PubSubClient mqtt_client(esp_client);
+int led_status = LOW;
 
 void callback(char* topic, byte* payload, unsigned int length) {
   // Serial.print("Message received [");
@@ -108,12 +109,26 @@ void mqtt_reconnect() {
 }
 
 void mqtt_setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
   esp_client.setInsecure();
   mqtt_client.setCallback(callback);
   mqtt_client.setBufferSize(JSON_BUFFER_SIZE);
 }
 
+
+void mqtt_update_status_led() {
+  int expected = mqtt_client.connected() ? 0 : 1;
+  if (expected != led_status) {
+    led_status = expected;
+    Serial.print("Changing MQTT status led to: ");
+    Serial.println(led_status ? "on" : "off");
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+}
+
 void mqtt_loop() {
+  mqtt_update_status_led();
+
   if (WiFi.status() == WL_CONNECTED) {
     if (!mqtt_client.connected()) {
       mqtt_reconnect();

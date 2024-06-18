@@ -83,14 +83,6 @@
     <script>
       const $ = document.querySelector.bind(document)
 
-      // function rgbToHex(rgb) {
-      //   return '#' + rgb.map((v) => v.toString(16).padStart(2, '0')).join('')
-      // }
-
-      // function hexToRgb(hex) {
-      //   return hex.match(/^([a-f\d]{2}){3}$/g).map((v) => parseInt(v, 16))
-      // }
-
       fetch('/colors.json')
         .then((res) => res.json())
         .then((data) => {
@@ -101,37 +93,6 @@
           $('.colors-card .loading').remove()
           $('.colors-card form').classList.remove('hidden')
         })
-      // document.addEventListener('alpine:init', () => {
-      //   Alpine.data('wifi', () => ({
-      //     loading: true,
-      //     serial: '',
-      //     open: false,
-
-      //     init() {
-      //       console.log('init')
-      //       this.loading = false
-      //     },
-
-      //     onFormSubmit(e) {
-      //       e.preventDefault()
-      //     },
-      //   }))
-
-      //   Alpine.data('printer', () => ({
-      //     loading: true,
-      //     serial: '',
-      //     open: false,
-
-      //     init() {
-      //       console.log('init')
-      //       this.loading = false
-      //     },
-
-      //     onFormSubmit(e) {
-      //       // e.preventDefault()
-      //     },
-      //   }))
-      // })
     </script>
   </body>
 </html>

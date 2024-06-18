@@ -1,6 +1,9 @@
 #ifndef XOLED_CONST_H
 #define XOLED_CONST_H
 
+// Built in LED pin
+#define LED_BUILTIN 2
+
 // Size of buffer for API JSON object (increase for more segments)
 #ifdef ESP8266
   #define JSON_BUFFER_SIZE 10240
