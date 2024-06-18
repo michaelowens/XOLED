@@ -1,5 +1,5 @@
 {
-  "name": "BambuLed",
+  "name": "XO-LED",
   "builds": [
     {
       "chipFamily": "ESP32",

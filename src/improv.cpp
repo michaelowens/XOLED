@@ -34,7 +34,7 @@ bool connectWifi(const char *ssid, const char *password)
 }
 
 void improv_setup() {
-  improv_serial.setDeviceInfo(ImprovTypes::ChipFamily::CF_ESP32, "BambuLED", "0.0.1", "BambuLED", "http://{LOCAL_IPV4}");
+  improv_serial.setDeviceInfo(ImprovTypes::ChipFamily::CF_ESP32, "XO-LED", "0.1.0", "XO-LED", "http://{LOCAL_IPV4}");
   improv_serial.onImprovError(onImprovWiFiErrorCb);
   improv_serial.onImprovConnected(onImprovWiFiConnectedCb);
   improv_serial.setCustomConnectWiFi(connectWifi);  // Optional
