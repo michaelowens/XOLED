@@ -25,21 +25,24 @@ bool connectWifi(const char *ssid, const char *password)
   strncpy(config.wifi_pass, password, sizeof(config.wifi_pass) - 1);
 
   size_t tries = 0;
-  while (!XOLED::instance().setup_wifi() && tries < 3) {
+  while (!XOLED::instance().setup_wifi() && tries < 3)
+  {
     tries += 1;
     delay(500);
   }
-   
+
   return WiFi.isConnected();
 }
 
-void improv_setup() {
-  improv_serial.setDeviceInfo(ImprovTypes::ChipFamily::CF_ESP32, "XO-LED", "0.1.0", "XO-LED", "http://{LOCAL_IPV4}");
+void improv_setup()
+{
+  improv_serial.setDeviceInfo(ImprovTypes::ChipFamily::CF_ESP32, "XOLED", "0.1.0", "XOLED", "http://{LOCAL_IPV4}");
   improv_serial.onImprovError(onImprovWiFiErrorCb);
   improv_serial.onImprovConnected(onImprovWiFiConnectedCb);
-  improv_serial.setCustomConnectWiFi(connectWifi);  // Optional
+  improv_serial.setCustomConnectWiFi(connectWifi); // Optional
 }
 
-void improv_loop() {
+void improv_loop()
+{
   improv_serial.handleSerial();
 }

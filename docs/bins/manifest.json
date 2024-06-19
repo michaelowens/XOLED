@@ -1,5 +1,5 @@
 {
-  "name": "XO-LED",
+  "name": "XOLED",
   "builds": [
     {
       "chipFamily": "ESP32",
