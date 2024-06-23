@@ -31,7 +31,11 @@ bool store_int_param(AsyncWebServerRequest *request, T &dest, const char *key) {
   return false;
 }
 
+bool webserver_setup_has_run = false;
 void webserver_setup() {
+  if (webserver_setup_has_run) return;
+  webserver_setup_has_run = true;
+  
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
 
   server.on("/colors.json", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -146,6 +150,7 @@ void webserver_setup() {
 
     if (has_changes) {
       config_save();
+      WiFi.disconnect();
     }
     
     request->redirect("/settings.html");

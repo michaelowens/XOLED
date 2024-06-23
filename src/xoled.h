@@ -6,15 +6,18 @@
 #include <FastLED.h>
 #include <time.h>
 #include <ArduinoJson.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
-#ifdef ESP32
+#ifdef ESP8266
+  #include <ESPAsyncTCP.h>
+// #ifdef ESP32
+#else
   #include "esp_wifi.h"
   #include <WiFiClientSecure.h>
   #include <FS.h>
   #include <SPIFFS.h>
   #include <AsyncTCP.h>
-#elif defined(ESP8266)
-  #include <ESPAsyncTCP.h>
 #endif
 
 #include <ESPAsyncWebServer.h>
@@ -25,6 +28,7 @@
 #include "improv.h"
 #include "mqtt.h"
 #include "webserver.h"
+#include "display.h"
 
 extern Config config;
 extern uint8_t progress;

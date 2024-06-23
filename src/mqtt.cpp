@@ -78,37 +78,44 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
+
 void mqtt_reconnect() {
   if (strlen(config.mqtt_server) < 1) return;
-  mqtt_client.setServer(config.mqtt_server, 8883);
 
-  while (!mqtt_client.connected()) {
-    Serial.print("Attempting to (re)connect to Bambu printer... ");
+  EVERY_N_SECONDS(5) {
+    mqtt_client.setServer(config.mqtt_server, 8883);
 
-    bool connected;
-    if (strlen(config.mqtt_user) > 0 || strlen(config.mqtt_pass) > 0) {
-      connected = mqtt_client.connect("arduinoClient", "bblp", config.mqtt_pass);
-    } else {
-      Serial.print("(no credentials) ");
-      connected = mqtt_client.connect("arduinoClient");
-    }
+    if (!mqtt_client.connected()) {
+      Serial.print("Attempting to (re)connect to Bambu printer... ");
 
-    if (connected) {
-      Serial.println("connected");
-      // mqtt_client.publish();
-      char topic[32];
-      sprintf(topic, "device/%s/report", config.mqtt_device_serial);
-      mqtt_client.subscribe(topic);
-    } else {
-      Serial.print("failed, rc=");
-      Serial.print(mqtt_client.state());
-      Serial.println(" try again in 5 seconds");
-      delay(5000);
+      bool connected;
+      if (strlen(config.mqtt_user) > 0 || strlen(config.mqtt_pass) > 0) {
+        connected = mqtt_client.connect("arduinoClient", "bblp", config.mqtt_pass);
+      } else {
+        Serial.print("(no credentials) ");
+        connected = mqtt_client.connect("arduinoClient");
+      }
+
+      if (connected) {
+        Serial.println("connected");
+        // mqtt_client.publish();
+        char topic[32];
+        sprintf(topic, "device/%s/report", config.mqtt_device_serial);
+        mqtt_client.subscribe(topic);
+      } else {
+        Serial.print("failed, rc=");
+        Serial.print(mqtt_client.state());
+        Serial.println(" try again in 5 seconds");
+      }
     }
   }
 }
 
+bool mqtt_setup_has_run = false;
 void mqtt_setup() {
+  if (mqtt_setup_has_run) return;
+  mqtt_setup_has_run = true;
+  
   pinMode(LED_BUILTIN, OUTPUT);
   esp_client.setInsecure();
   mqtt_client.setCallback(callback);
@@ -135,4 +142,8 @@ void mqtt_loop() {
     }
     mqtt_client.loop();
   }
+}
+
+bool mqtt_is_connected() {
+  return mqtt_client.connected();
 }

@@ -2,6 +2,7 @@
 
 Config config{};
 uint8_t progress = 0;
+bool services_setup_has_run = false;
 
 CRGB PROGRESS_ON_LED = CRGB::Blue;
 CRGB PROGRESS_OFF_LED = CRGB::DarkOrange;
@@ -27,32 +28,33 @@ void printfps() {
 
 XOLED::XOLED() {}
 
-bool XOLED::setup_wifi() {
-  Serial.print("Connecting to WiFi: ");
-  Serial.print(config.wifi_ssid);
+bool XOLED::setup_wifi() {}
+// bool XOLED::setup_wifi() {
+//   Serial.print("Connecting to WiFi: ");
+//   Serial.print(config.wifi_ssid);
 
-  WiFi.begin(config.wifi_ssid, config.wifi_pass);
+//   WiFi.begin(config.wifi_ssid, config.wifi_pass);
 
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
+//   while (WiFi.status() != WL_CONNECTED) {
+//     Serial.print(".");
 
-    EVERY_N_SECONDS(10) {
-      Serial.println(" failed");
-      WiFi.disconnect();
-      return false;
-    }
+//     EVERY_N_SECONDS(10) {
+//       Serial.println(" failed");
+//       WiFi.disconnect();
+//       return false;
+//     }
 
-    delay(500);
-  }
+//     delay(500);
+//   }
 
-  randomSeed(micros());
+//   randomSeed(micros());
 
-  Serial.println(" connected");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+//   Serial.println(" connected");
+//   Serial.print("IP address: ");
+//   Serial.println(WiFi.localIP());
 
-  return true;
-}
+//   return true;
+// }
 
 bool XOLED::setup_time() {
   Serial.print("set_time: Setting time using SNTP");
@@ -79,12 +81,12 @@ bool XOLED::setup_time() {
   return true;
 }
 
-void XOLED::setup_services() {
-  while (!setup_time()) delay(500);
+// void XOLED::setup_services() {
+//   while (!setup_time()) delay(500);
   
-  mqtt_setup();
-  webserver_setup();
-}
+//   mqtt_setup();
+//   webserver_setup();
+// }
 
 void XOLED::setup_leds() {
   if (FastLED.count() != 0) {
@@ -107,7 +109,10 @@ void XOLED::setup() {
     Serial.println("SPIFFS failed to initialize");
   }
 
+  Serial.println("XOLED v2.0.0");
+
   config_load_from_FS();
+  display_setup();
 
   PROGRESS_ON_LED = CRGB(config.color_fg[0], config.color_fg[1], config.color_fg[2]);
   PROGRESS_OFF_LED = CRGB(config.color_bg[0], config.color_bg[1], config.color_bg[2]);
@@ -115,22 +120,102 @@ void XOLED::setup() {
 
   improv_setup();
 
-  if (strlen(config.wifi_ssid) > 0) {
-    size_t tries = 0;
-    while (!setup_wifi() && tries < 5) {
-      tries += 1;
-      delay(500);
-    }
+  // if (strlen(config.wifi_ssid) > 0) {
+  //   size_t tries = 0;
+  //   while (!setup_wifi() && tries < 5) {
+  //     tries += 1;
+  //     delay(500);
+  //   }
     
-    if (WiFi.isConnected()) setup_services();
+  //   if (WiFi.isConnected()) setup_services();
+  // }
+}
+
+bool wifi_connecting = false;
+void wifi_loop() {
+  if (WiFi.isConnected()) {
+    if (wifi_connecting) {
+      wifi_connecting = false;
+      services_setup_has_run = false;
+      randomSeed(micros());
+      Serial.println("WiFi connected");
+      Serial.print("IP address: ");
+      Serial.println(WiFi.localIP());
+      
+      // XOLED::instance().setup_services();
+      configTime(8 * 3600, 0, "de.pool.ntp.org");
+    }
+    return;
   }
 
-  delay(1500); // give hardware time to sort itself out
+  if (!wifi_connecting) {
+    if (strlen(config.wifi_ssid) < 1) return;
+
+    wifi_connecting = true;
+    
+    Serial.print("Connecting to WiFi: ");
+    Serial.println(config.wifi_ssid);
+    WiFi.begin(config.wifi_ssid, config.wifi_pass);
+  } else {
+    // if (WiFi.status() == WL_CONNECTED) return;
+    EVERY_N_SECONDS(10) {
+      Serial.println("WiFi connection failed");
+      WiFi.disconnect();
+      wifi_connecting = false;
+      // return false;
+    }
+  }
+
+  // WiFi.begin(config.wifi_ssid, config.wifi_pass);
+
+  // while (WiFi.status() != WL_CONNECTED) {
+  //   Serial.print(".");
+
+  //   EVERY_N_SECONDS(10) {
+  //     Serial.println(" failed");
+  //     WiFi.disconnect();
+  //     return false;
+  //   }
+
+  //   delay(500);
+  // }
+
+  // randomSeed(micros());
+
+  // Serial.println(" connected");
+  // Serial.print("IP address: ");
+  // Serial.println(WiFi.localIP());
+
+  // if (wifi_connecting) return;
+}
+
+void services_loop() {
+  if (services_setup_has_run) return;
+  if (!WiFi.isConnected()) return;
+
+  EVERY_N_SECONDS(10) {
+    Serial.println("Failed to sync time");
+    configTime(8 * 3600, 0, "de.pool.ntp.org");
+    return;
+  }
+  
+  time_t now = time(nullptr);
+  if (now > 1000) {
+    return;
+  }
+
+  mqtt_setup();
+  webserver_setup();
+
+  services_setup_has_run = true;
 }
 
 void XOLED::loop() {
+  wifi_loop();
+  services_loop();
   improv_loop();
   mqtt_loop();
+  display_loop();
 
   // mpark::visit(deviceStateHandler, state);
   switch (device.state) {

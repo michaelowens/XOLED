@@ -22,9 +22,10 @@
       "chipFamily": "ESP32-C3",
       "parts": [
         {
-          "path": "esp32-c3_bootloader_v2.bin",
+          "path": "bootloader copy.bin",
           "offset": 0
         },
+        { "path": "partitions.bin", "offset": 32.768 },
         {
           "path": "firmware_esp32c3dev.bin",
           "offset": 65536
