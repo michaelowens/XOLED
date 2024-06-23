@@ -262,6 +262,14 @@ void XOLED::loop() {
     case DeviceState::Finished: {
       unsigned long t = millis();
 
+      // Let the leds be on for 2 seconds before playing the animation
+      if (t - device.data.finished.since < 2000) {
+        for(int i = 0; i < config.led_count; i = i + 1) {
+          leds[i] = PROGRESS_ON_LED;
+        }
+        break;
+      }
+
       // After 30 seconds, switch to solid colors
       if (t - device.data.finished.since > 30000) {
         for(int i = 0; i < config.led_count; i = i + 1) {
