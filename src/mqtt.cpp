@@ -5,11 +5,6 @@ PubSubClient mqtt_client(esp_client);
 int led_status = LOW;
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  // Serial.print("Message received [");
-  // Serial.print(topic);
-  // Serial.print("] ");
-  // parse payload...
-
   JsonDocument doc;
   DeserializationError error = deserializeJson(doc, payload);
   if (error) {
@@ -24,7 +19,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
       if (strcmp(command, "project_prepare") == 0) {
           StateData new_data;
           new_data.printing.percentage = 0;
-          g_Device.set_state(DeviceState::Printing, new_data);
+          g_Printer.set_state(PrinterState::Printing, new_data);
         return;
       }
     }
@@ -34,43 +29,43 @@ void callback(char* topic, byte* payload, unsigned int length) {
     strlcpy(gcode_state, doc["print"]["gcode_state"], 32);
 
     if (strcmp(gcode_state, "RUNNING") == 0) {
-      switch (g_Device.state) {
-        case DeviceState::Loading:
-        case DeviceState::Finished:
-        case DeviceState::Error: {
+      switch (g_Printer.state) {
+        case PrinterState::Loading:
+        case PrinterState::Finished:
+        case PrinterState::Error: {
           StateData new_data;
           new_data.printing.percentage = doc["print"]["mc_percent"];
-          g_Device.set_state(DeviceState::Printing, new_data);
+          g_Printer.set_state(PrinterState::Printing, new_data);
           break;
         }
 
-        case DeviceState::Printing: {
+        case PrinterState::Printing: {
           uint8_t new_percentage = doc["print"]["mc_percent"];
           // Sometimes messages report 0%
           if (new_percentage == 0) break;
-          g_Device.data.printing.percentage = new_percentage;
+          g_Printer.data.printing.percentage = new_percentage;
           break;
         }
       }
     } else if (strcmp(gcode_state, "FINISH") == 0) {
-      switch (g_Device.state) {
-        case DeviceState::Loading:
-        case DeviceState::Printing: {
+      switch (g_Printer.state) {
+        case PrinterState::Loading:
+        case PrinterState::Printing: {
           StateData new_data;
           new_data.finished.since = millis();
-          g_Device.set_state(DeviceState::Finished, new_data);
+          g_Printer.set_state(PrinterState::Finished, new_data);
           break;
         }
       }
     } else if (strcmp(gcode_state, "FAILED") == 0) {
-      switch (g_Device.state) {
-        case DeviceState::Error: {
+      switch (g_Printer.state) {
+        case PrinterState::Error: {
           break;
         }
 
         default: {
           StateData new_data;
-          g_Device.set_state(DeviceState::Error, new_data);
+          g_Printer.set_state(PrinterState::Error, new_data);
           break;
         }
       }

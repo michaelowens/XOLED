@@ -54,18 +54,18 @@ union StateData {
   ErrorState error;
 };
 
-enum class DeviceState {
+enum class PrinterState {
   Loading, Printing, Finished, Error
 };
 
-class Device {
+class Printer {
 public:
-  DeviceState state;
+  PrinterState state;
   StateData data;
 
-  Device() : state(DeviceState::Loading) {}
+  Printer() : state(PrinterState::Loading) {}
 
-  void set_state(DeviceState new_state, StateData new_data) {
+  void set_state(PrinterState new_state, StateData new_data) {
     state = new_state;
     data = new_data;
   }
@@ -75,14 +75,12 @@ class XOLED {
 public:
   XOLED();
 
-  bool setup_wifi();
   bool setup_time();
-  void setup_services();
   void setup_leds();
 
   void setup();
   void loop();
 };
 
-extern Device g_Device;
+extern Printer g_Printer;
 extern XOLED g_XOLED;

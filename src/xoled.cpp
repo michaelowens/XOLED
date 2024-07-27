@@ -10,8 +10,7 @@ CRGB *leds;
 
 WiFiClientSecure esp_client;
 
-// DeviceState state = LoadingState{0};
-Device g_Device;
+Printer g_Printer;
 XOLED g_XOLED;
 
 long fps_loops = 0;
@@ -28,34 +27,6 @@ void printfps() {
 }
 
 XOLED::XOLED() {}
-
-bool XOLED::setup_wifi() {}
-// bool XOLED::setup_wifi() {
-//   Serial.print("Connecting to WiFi: ");
-//   Serial.print(config.wifi_ssid);
-
-//   WiFi.begin(config.wifi_ssid, config.wifi_pass);
-
-//   while (WiFi.status() != WL_CONNECTED) {
-//     Serial.print(".");
-
-//     EVERY_N_SECONDS(10) {
-//       Serial.println(" failed");
-//       WiFi.disconnect();
-//       return false;
-//     }
-
-//     delay(500);
-//   }
-
-//   randomSeed(micros());
-
-//   Serial.println(" connected");
-//   Serial.print("IP address: ");
-//   Serial.println(WiFi.localIP());
-
-//   return true;
-// }
 
 bool XOLED::setup_time() {
   Serial.print("set_time: Setting time using SNTP");
@@ -81,13 +52,6 @@ bool XOLED::setup_time() {
 
   return true;
 }
-
-// void XOLED::setup_services() {
-//   while (!setup_time()) delay(500);
-  
-//   mqtt_setup();
-//   webserver_setup();
-// }
 
 void XOLED::setup_leds() {
   if (FastLED.count() != 0) {
@@ -120,16 +84,6 @@ void XOLED::setup() {
   setup_leds();
 
   improv_setup();
-
-  // if (strlen(config.wifi_ssid) > 0) {
-  //   size_t tries = 0;
-  //   while (!setup_wifi() && tries < 5) {
-  //     tries += 1;
-  //     delay(500);
-  //   }
-    
-  //   if (WiFi.isConnected()) setup_services();
-  // }
 }
 
 bool wifi_connecting = false;
@@ -143,7 +97,6 @@ void wifi_loop() {
       Serial.print("IP address: ");
       Serial.println(WiFi.localIP());
       
-      // g_XOLED.setup_services();
       configTime(8 * 3600, 0, "de.pool.ntp.org");
     }
     return;
@@ -166,28 +119,6 @@ void wifi_loop() {
       // return false;
     }
   }
-
-  // WiFi.begin(config.wifi_ssid, config.wifi_pass);
-
-  // while (WiFi.status() != WL_CONNECTED) {
-  //   Serial.print(".");
-
-  //   EVERY_N_SECONDS(10) {
-  //     Serial.println(" failed");
-  //     WiFi.disconnect();
-  //     return false;
-  //   }
-
-  //   delay(500);
-  // }
-
-  // randomSeed(micros());
-
-  // Serial.println(" connected");
-  // Serial.print("IP address: ");
-  // Serial.println(WiFi.localIP());
-
-  // if (wifi_connecting) return;
 }
 
 void services_loop() {
@@ -218,9 +149,9 @@ void XOLED::loop() {
   mqtt_loop();
   display_loop();
 
-  // mpark::visit(deviceStateHandler, state);
-  switch (g_Device.state) {
-    case DeviceState::Loading: {
+  // mpark::visit(PrinterStateHandler, state);
+  switch (g_Printer.state) {
+    case PrinterState::Loading: {
       unsigned long t = millis();
       int x = 10.5+sin(t/750.0)*10;
       for (int i = 0; i < config.led_count; i++) {
@@ -233,7 +164,7 @@ void XOLED::loop() {
       break;
     }
 
-    case DeviceState::Error: {
+    case PrinterState::Error: {
       unsigned long t = millis();
       int x = 10.5+sin(t/750.0)*10;
       for (int i = 0; i < config.led_count; i++) {
@@ -246,8 +177,8 @@ void XOLED::loop() {
       break;
     }
 
-    case DeviceState::Printing: {
-      float percentage = (float)g_Device.data.printing.percentage/(float)100;
+    case PrinterState::Printing: {
+      float percentage = (float)g_Printer.data.printing.percentage/(float)100;
       float onLeds = (float)config.led_count * percentage;
 
       for(int i = 0; i < config.led_count; i = i + 1) {
@@ -260,11 +191,11 @@ void XOLED::loop() {
       break;
     }
 
-    case DeviceState::Finished: {
+    case PrinterState::Finished: {
       unsigned long t = millis();
 
       // Let the leds be on for 2 seconds before playing the animation
-      if (t - g_Device.data.finished.since < 2000) {
+      if (t - g_Printer.data.finished.since < 2000) {
         for(int i = 0; i < config.led_count; i = i + 1) {
           leds[i] = PROGRESS_ON_LED;
         }
@@ -272,7 +203,7 @@ void XOLED::loop() {
       }
 
       // After 30 seconds, switch to solid colors
-      if (t - g_Device.data.finished.since > 30000) {
+      if (t - g_Printer.data.finished.since > 30000) {
         for(int i = 0; i < config.led_count; i = i + 1) {
           leds[i] = PROGRESS_ON_LED;
         }
@@ -290,29 +221,6 @@ void XOLED::loop() {
   EVERY_N_MILLIS(67) {
     FastLED.show();
   }
-
-  // EVERY_N_MILLIS(1000) {
-    // switch (state) {
-    //   case LoadingState:
-    //     break;
-
-    //   case DeviceStateType::Printing:
-    //     float percentage = (float)state.data.printing.percentage/(float)100;
-    //     float onLeds = (float)config.led_count * percentage;
-
-    //     for(int i = 0; i < config.led_count; i = i + 1) {
-    //       if (i < (int)onLeds) {
-    //         leds[i] = PROGRESS_ON_LED;
-    //       } else {
-    //         leds[i] = PROGRESS_OFF_LED;
-    //       }
-    //     }
-    //     break;
-    // }
-    // FastLED.show();
-    // FastLED.delay(100);
-  // }
-  // delay(50);
 }
 
 void setup() {
