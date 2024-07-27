@@ -24,7 +24,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
       if (strcmp(command, "project_prepare") == 0) {
           StateData new_data;
           new_data.printing.percentage = 0;
-          device.set_state(DeviceState::Printing, new_data);
+          g_Device.set_state(DeviceState::Printing, new_data);
         return;
       }
     }
@@ -34,13 +34,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
     strlcpy(gcode_state, doc["print"]["gcode_state"], 32);
 
     if (strcmp(gcode_state, "RUNNING") == 0) {
-      switch (device.state) {
+      switch (g_Device.state) {
         case DeviceState::Loading:
         case DeviceState::Finished:
         case DeviceState::Error: {
           StateData new_data;
           new_data.printing.percentage = doc["print"]["mc_percent"];
-          device.set_state(DeviceState::Printing, new_data);
+          g_Device.set_state(DeviceState::Printing, new_data);
           break;
         }
 
@@ -48,29 +48,29 @@ void callback(char* topic, byte* payload, unsigned int length) {
           uint8_t new_percentage = doc["print"]["mc_percent"];
           // Sometimes messages report 0%
           if (new_percentage == 0) break;
-          device.data.printing.percentage = new_percentage;
+          g_Device.data.printing.percentage = new_percentage;
           break;
         }
       }
     } else if (strcmp(gcode_state, "FINISH") == 0) {
-      switch (device.state) {
+      switch (g_Device.state) {
         case DeviceState::Loading:
         case DeviceState::Printing: {
           StateData new_data;
           new_data.finished.since = millis();
-          device.set_state(DeviceState::Finished, new_data);
+          g_Device.set_state(DeviceState::Finished, new_data);
           break;
         }
       }
     } else if (strcmp(gcode_state, "FAILED") == 0) {
-      switch (device.state) {
+      switch (g_Device.state) {
         case DeviceState::Error: {
           break;
         }
 
         default: {
           StateData new_data;
-          device.set_state(DeviceState::Error, new_data);
+          g_Device.set_state(DeviceState::Error, new_data);
           break;
         }
       }

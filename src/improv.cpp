@@ -14,7 +14,7 @@ void onImprovWiFiConnectedCb(const char *ssid, const char *password)
   // strlcpy(config.wifi_ssid, ssid, 33);
   // strlcpy(config.wifi_pass, password, 65);
   config_save();
-  // XOLED::instance().setup_services();
+  // g_XOLED.setup_services();
 }
 
 bool connectWifi(const char *ssid, const char *password)
@@ -25,7 +25,7 @@ bool connectWifi(const char *ssid, const char *password)
   strncpy(config.wifi_pass, password, sizeof(config.wifi_pass) - 1);
 
   size_t tries = 0;
-  while (!XOLED::instance().setup_wifi() && tries < 3)
+  while (!g_XOLED.setup_wifi() && tries < 3)
   {
     tries += 1;
     delay(500);

@@ -1,7 +1,4 @@
-#ifndef XOLED_IMPROV_H
-#define XOLED_IMPROV_H
+#pragma once
 
 void improv_setup();
 void improv_loop();
-
-#endif

@@ -121,7 +121,7 @@ void webserver_setup() {
     bool has_changes = false;
 
     if (store_int_param(request, config.led_count, "led_count")) {
-      XOLED::instance().setup_leds();
+      g_XOLED.setup_leds();
       has_changes = true;
     }
 

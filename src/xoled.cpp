@@ -11,7 +11,8 @@ CRGB *leds;
 WiFiClientSecure esp_client;
 
 // DeviceState state = LoadingState{0};
-Device device;
+Device g_Device;
+XOLED g_XOLED;
 
 long fps_loops = 0;
 unsigned long fps_current_millis;
@@ -142,7 +143,7 @@ void wifi_loop() {
       Serial.print("IP address: ");
       Serial.println(WiFi.localIP());
       
-      // XOLED::instance().setup_services();
+      // g_XOLED.setup_services();
       configTime(8 * 3600, 0, "de.pool.ntp.org");
     }
     return;
@@ -218,7 +219,7 @@ void XOLED::loop() {
   display_loop();
 
   // mpark::visit(deviceStateHandler, state);
-  switch (device.state) {
+  switch (g_Device.state) {
     case DeviceState::Loading: {
       unsigned long t = millis();
       int x = 10.5+sin(t/750.0)*10;
@@ -246,7 +247,7 @@ void XOLED::loop() {
     }
 
     case DeviceState::Printing: {
-      float percentage = (float)device.data.printing.percentage/(float)100;
+      float percentage = (float)g_Device.data.printing.percentage/(float)100;
       float onLeds = (float)config.led_count * percentage;
 
       for(int i = 0; i < config.led_count; i = i + 1) {
@@ -263,7 +264,7 @@ void XOLED::loop() {
       unsigned long t = millis();
 
       // Let the leds be on for 2 seconds before playing the animation
-      if (t - device.data.finished.since < 2000) {
+      if (t - g_Device.data.finished.since < 2000) {
         for(int i = 0; i < config.led_count; i = i + 1) {
           leds[i] = PROGRESS_ON_LED;
         }
@@ -271,7 +272,7 @@ void XOLED::loop() {
       }
 
       // After 30 seconds, switch to solid colors
-      if (t - device.data.finished.since > 30000) {
+      if (t - g_Device.data.finished.since > 30000) {
         for(int i = 0; i < config.led_count; i = i + 1) {
           leds[i] = PROGRESS_ON_LED;
         }
@@ -320,10 +321,10 @@ void setup() {
 	// sanity check delay - allows reprogramming if accidently blowing power w/leds
   delay(2000);
 
-  XOLED::instance().setup();
+  g_XOLED.setup();
 }
 
 void loop() {
   // printfps();
-  XOLED::instance().loop();
+  g_XOLED.loop();
 }

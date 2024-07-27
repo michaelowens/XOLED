@@ -1,6 +1,3 @@
-#ifndef XOLED_WEBSERVER_H
-#define XOLED_WEBSERVER_H
+#pragma once
 
 void webserver_setup();
-
-#endif

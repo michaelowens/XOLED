@@ -1,5 +1,4 @@
-#ifndef XOLED_CONFIG_H
-#define XOLED_CONFIG_H
+#pragma once
 
 struct Config {
   char wifi_ssid[33];
@@ -22,5 +21,3 @@ struct Config {
 bool config_load(JsonObject doc, bool fromFS);
 void config_save();
 bool config_load_from_FS();
-
-#endif // XOLED_CONFIG_H

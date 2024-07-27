@@ -1,5 +1,4 @@
-#ifndef XOLED_H
-#define XOLED_H
+#pragma once
 
 #include <Arduino.h>
 #include <PubSubClient.h>
@@ -72,16 +71,9 @@ public:
   }
 };
 
-extern Device device;
-
 class XOLED {
 public:
-  static XOLED& instance() {
-    static XOLED instance;
-    return instance;
-  }
-  XOLED(XOLED const&)           = delete;
-  void operator=(XOLED const&)  = delete;
+  XOLED();
 
   bool setup_wifi();
   bool setup_time();
@@ -90,9 +82,7 @@ public:
 
   void setup();
   void loop();
-
-private:
-  XOLED();
 };
 
-#endif // XOLED_H
+extern Device g_Device;
+extern XOLED g_XOLED;
