@@ -1,19 +1,41 @@
-<body style="background-color: #424242">
-  <h1 style="color: antiquewhite">Uploader / Serial Monitor</h1>
-  <script
-    type="module"
-    src="https://unpkg.com/esp-web-tools@7.3.1/dist/web/install-button.js?module"
-  ></script>
-  <esp-web-install-button
-    manifest="bins/manifest.json"
-  ></esp-web-install-button>
-  <div style="text-align: right; font-size: 11px">
-    <hr />
-    <a
-      href="https://esphome.github.io/esp-web-tools/"
-      target="_blank"
-      style="color: antiquewhite"
-      >Installer powered by ESP Web Tools</a
-    >
-  </div>
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XOLED</title>
+    <meta name="color-scheme" content="light dark" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <script
+      type="module"
+      src="https://unpkg.com/esp-web-tools@7.3.1/dist/web/install-button.js?module"
+    ></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>XOLED Web Installer</h1>
+      <article>
+        <p>To install XOLED:</p>
+        <ol>
+          <li>Plug in your ESP32 via USB</li>
+          <li>Click the "connect" button and select the correct COM port</li>
+          <li>Install XOLED</li>
+        </ol>
+        <esp-web-install-button
+          manifest="bins/manifest.json"
+        ></esp-web-install-button>
+      </article>
+      <div style="text-align: right; font-size: 11px">
+        <a
+          href="https://esphome.github.io/esp-web-tools/"
+          target="_blank"
+          class="secondary"
+          >Installer powered by ESP Web Tools</a
+        >
+      </div>
+    </main>
+  </body>
+</html>
