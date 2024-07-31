@@ -17,6 +17,7 @@ XOLED is a firmware project designed for the ESP32 microcontroller. It connects 
 - Connects to Bambu Lab 3D printers using MQTT protocol.
 - Displays real-time print progress on a LED strip.
 - User-friendly 3D-printed enclosure for easy mounting.
+- Experimental support for an I2C display
 
 ## Installation
 
