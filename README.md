@@ -1,5 +1,7 @@
 # XOLED
 
+![XOLED Showcase](https://makerworld.bblmw.com/makerworld/model/US3a976399c751ad/design/2024-08-03_c5c91ad4dcc5d.jpeg?x-oss-process=image/resize,w_1920/format,webp)
+
 XOLED is a firmware project designed for the ESP32 microcontroller. It connects to a Bambu Lab 3D printer using MQTT to display the print progress on a LED strip. The project includes a 3D-printed enclosure designed by [ortoPilot](https://twitch.tv/ortopilot).
 
 ## Table of Contents
@@ -21,7 +23,7 @@ XOLED is a firmware project designed for the ESP32 microcontroller. It connects 
 
 ## Installation
 
-The easiest way to install the firmware is using the web installer, which works on Chrome browsers. Visit the installer [here](https://michaelowens.github.io/XOLED).
+The easiest way to install the firmware is using the web installer, which works on Chrome browsers. Visit the installer [here](https://michaelowens.github.io/XOLED). Instructions on connecting the hardware can be found on the [enclosure](#enclosure) page.
 
 - Visit the [web installer](https://michaelowens.github.io/XOLED) in your Chrome browser.
 - Connect your ESP32 to your computer using a USB cable.
@@ -45,7 +47,7 @@ Once the firmware is uploaded and the ESP32 is powered on, it will:
 
 ## Enclosure
 
-The 3D-printed enclosure designed by [ortoPilot](https://twitch.tv/ortopilot) provides a neat and secure housing for the ESP32 and LED strip. You can download the STL files for the enclosure from [this link](#) _(coming soon)_ and print it using your 3D printer.
+The 3D-printed enclosure designed by [ortoPilot](https://twitch.tv/ortopilot) provides a neat and secure housing for the ESP32 and LED strip. You can download the STL files for the enclosure from [this link](https://makerworld.com/en/models/570064#profileId-489970) and print it using your 3D printer.
 
 ## License
 
